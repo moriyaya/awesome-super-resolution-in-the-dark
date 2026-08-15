@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="assets/hero.svg" alt="A dark-to-detailed scientific landscape" width="100%" />
-
 # Awesome Super-Resolution in the Dark
 
 ### A research map for low-light image and video super-resolution
