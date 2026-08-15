@@ -1,0 +1,36 @@
+name: Suggest a paper or resource
+description: Propose an addition or metadata correction.
+title: "[Paper]: "
+labels:
+  - paper
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Paper title
+    validations:
+      required: true
+  - type: input
+    id: venue
+    attributes:
+      label: Venue and year
+    validations:
+      required: true
+  - type: input
+    id: paper
+    attributes:
+      label: Paper or DOI URL
+    validations:
+      required: true
+  - type: input
+    id: code
+    attributes:
+      label: Official code URL
+      description: Leave blank if no author-maintained implementation exists.
+  - type: textarea
+    id: relevance
+    attributes:
+      label: Relevance to low-light super-resolution
+      description: Explain the input, output, and coupled degradations in one or two sentences.
+    validations:
+      required: true
