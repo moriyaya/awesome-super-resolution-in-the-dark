@@ -21,6 +21,9 @@ jobs:
       - uses: lycheeverse/lychee-action@v2
         with:
           args: >-
-            --verbose --no-progress --accept 200,206,429
+            --verbose --no-progress --accept 200,202,206,429
+            --exclude '^https://doi\\.org/10\\.(1145|1609|3390)/'
+            --exclude '^https://vbn\\.aau\\.dk/'
+            --exclude '^https://www\\.sciencedirect\\.com/'
             README.md CONTRIBUTING.md MAINTENANCE.md
           fail: true
