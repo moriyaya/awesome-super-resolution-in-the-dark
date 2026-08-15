@@ -1,129 +1,153 @@
 <div align="center">
 
+<img src="assets/hero.svg" alt="A dark-to-detailed scientific landscape" width="100%" />
+
 # Awesome Super-Resolution in the Dark
 
-**A curated list of papers, code, datasets, and resources for low-light image and video super-resolution.**
+### A research map for low-light image and video super-resolution
 
 [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
-[![Last Update](https://img.shields.io/github/last-commit/moriyaya/awesome-super-resolution-in-the-dark?label=updated)](https://github.com/moriyaya/awesome-super-resolution-in-the-dark/commits/main)
+[![Works](https://img.shields.io/badge/curated%20works-24-8A2BE2)](#papers-by-setting)
+[![Datasets](https://img.shields.io/badge/task--specific%20datasets-7-0B6E99)](#datasets-and-benchmarks)
+[![Maintenance](https://img.shields.io/badge/maintenance-evidence--based-2EA44F)](MAINTENANCE.md)
 [![License: CC0-1.0](https://img.shields.io/badge/license-CC0--1.0-blue.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+*From dim, low-resolution observations to faithful, well-illuminated detail.*
 
 </div>
 
-Low-light super-resolution (LLSR/LLISR) aims to recover a **well-illuminated high-resolution image or video** from observations degraded jointly by insufficient illumination, low spatial resolution, noise, blur, color distortion, and camera processing. This list focuses on methods that explicitly address both illumination and resolution—not generic low-light enhancement or standard super-resolution alone.
+> **Why this list exists.** Low-light super-resolution is not simply “enhancement + upsampling.” Darkness, sensor noise, blur, color distortion, and missing spatial detail are coupled at capture time. This repository maps the papers, code, and datasets that model that coupling explicitly.
 
-> **Living list.** The field is young and terminology is not yet standardized. Missing work and corrections are welcome through [issues](https://github.com/moriyaya/awesome-super-resolution-in-the-dark/issues) or [pull requests](CONTRIBUTING.md).
+<div align="center">
 
-## Contents
+[Explore the field](#research-map) · [Browse papers](#papers-by-setting) · [Find data](#datasets-and-benchmarks) · [Suggest an entry](CONTRIBUTING.md) · [See maintenance policy](MAINTENANCE.md)
 
-- [Scope](#scope)
-- [Taxonomy](#taxonomy)
-- [Papers](#papers)
-  - [Single-image methods](#single-image-methods)
-  - [RAW and sensor-aware methods](#raw-and-sensor-aware-methods)
-  - [Burst and video methods](#burst-and-video-methods)
-  - [Specialized and adjacent methods](#specialized-and-adjacent-methods)
-- [Datasets](#datasets)
-- [Related awesome lists](#related-awesome-lists)
-- [Contributing](#contributing)
+</div>
 
-## Scope
+## At a glance
 
-### Included
+| Start here | What you will find |
+|---|---|
+| **New to the field** | Read [RELLISUR](#datasets-and-benchmarks), then **RELIEF**, **BrZoNet**, and **TriCo** for the single-image problem formulation. |
+| **Building a method** | Compare model families in the [research map](#research-map), then use the tables to locate official code and training data. |
+| **Working with RAW, events, burst, or video** | Jump directly to the modality-specific tracks; these settings should not be compared as if they had identical input information. |
+| **Maintaining the list** | Follow the [evidence hierarchy](MAINTENANCE.md) and submit only verifiable metadata. |
 
-- direct low-light low-resolution (LLLR) → normal/well-lighted high-resolution reconstruction;
-- joint low-light enhancement and image/video super-resolution;
-- real, synthetic, RAW, sRGB, burst, and video settings;
-- datasets and benchmarks created specifically for the coupled task;
-- specialized low-light SR settings when clearly labeled.
+## Scope and editorial policy
 
-### Not included by default
+**Core scope:** methods that reconstruct a well-illuminated, high-resolution image or video from low-light low-resolution observations (LLLR → NLHR/WIHR). This includes real/synthetic single-image, RAW/sRGB, burst, event, and video settings.
 
-- low-light enhancement that preserves the input spatial resolution;
-- ordinary super-resolution evaluated only under normal illumination;
-- pipelines that merely use an off-the-shelf enhancer and upsampler without studying the coupled task;
-- “high-resolution low-light enhancement” where *high-resolution* describes the input size rather than an SR objective.
+**Intentionally separated:** low-light face SR and domain-specific imaging are valuable but use different priors and data protocols, so they appear in their own track. Generic LLIE, ordinary SR, and simple cascades are not listed as core methods unless they establish a benchmark or directly inform the joint task.
 
-## Taxonomy
+**Resource labels:** **Code** = author-maintained runnable release; **Repository** = author repository exists but is incomplete/minimal; **Announced** = relevant implementation is promised; **—** = no author-maintained release located at curation time.
 
-| Axis | Categories | Main question |
+## Research map
+
+```mermaid
+flowchart LR
+    A[Low-light low-resolution observation] --> B{Available signal}
+    B --> C[Single image / sRGB]
+    B --> D[RAW + sRGB]
+    B --> E[Burst / video]
+    B --> F[Event + video]
+    C --> G[Joint reconstruction]
+    D --> H[Sensor-aware fusion]
+    E --> I[Temporal propagation]
+    F --> J[Cross-modal fusion]
+    G --> K[NLHR image]
+    H --> K
+    I --> L[WIHR video]
+    J --> L
+```
+
+| Family | Representative ideas | Representative papers |
 |---|---|---|
-| Input | Single image · RAW/sRGB · Burst · Video | What observations are available? |
-| Degradation | Synthetic · Real-captured · Ultra-dark · Unknown/mixed | How faithfully is darkness coupled with downsampling, noise, and blur? |
-| Learning | Direct mapping · Decoupled/multi-stream · Multi-level optimization · Diffusion | How are illumination recovery and detail reconstruction coordinated? |
-| Prior | Retinex/illumination · Semantic · Frequency · Degradation · Temporal | What guides reconstruction when the signal is weak? |
-| Output | NLHR image · WIHR video · Task-specific HR output | What is reconstructed? |
+| **Joint direct reconstruction** | Learn one LLLR → NLHR mapping; avoid cascade error accumulation | LSR, RELIEF, JLSN |
+| **Illumination / reflectance decoupling** | Treat luminance and detail as related but distinct signals | BrZoNet, UltraIS, LoLiSRFlow |
+| **Prior-guided reconstruction** | Introduce semantic, codebook, frequency, or degradation priors | TriCo, MSIRNet, DTP, DARE |
+| **Sensor-aware fusion** | Preserve RAW radiance information while using sRGB/ISP cues | JSLNet, SRRIIE |
+| **Temporal and event-assisted recovery** | Use complementary frames or high-contrast event streams | DFEVSR, VSRELL, RetinexEVSR |
+| **Face-specific restoration** | Preserve identity, structure, and texture under coupled face degradation | IC-FSRDENet, DiffLLFace |
 
-## Papers
+## Papers by setting
 
-Legend: **Code** links to an author-released implementation. **Announced** means a repository exists but the relevant implementation or weights are not yet fully released. `—` means no author code was located during curation.
+### 1. Single-image, natural-scene LLSR
 
-### Single-image methods
-
-| Year | Method | Paper | Venue | Main idea | Resources |
+| Year | Method | Paper | Venue | Key contribution | Resources |
 |---:|---|---|---|---|---|
-| 2026 | DTP | [Dual-Path Learning based on Frequency Structural Decoupling and Regional-Aware Fusion for Low-Light Image Super-Resolution](https://arxiv.org/abs/2603.27301) | ICME 2026 | Frequency decoupling and dual-path luminance/texture reconstruction | [Code](https://github.com/JXVision/DTP) |
-| 2026 | GTFMN | [Guided Texture and Feature Modulation Network for Low-Light Image Enhancement and Super-Resolution](https://arxiv.org/abs/2601.19157) | arXiv 2026 | Illumination-guided modulation of a texture stream | — |
-| 2025 | DARE | [Degradation-Aware One-Step Diffusion Model for Content-Sensitive Super-Resolution in the Dark](https://doi.org/10.1145/3746027.3755853) | ACM MM 2025 | One-step diffusion with degradation-aware LoRA and content-sensitive priors | [Code](https://github.com/csmty/DARE) |
-| 2025 | UltraIS | [A Dual-Stream-Modulated Learning Framework for Illuminating and Super-Resolving Ultra-Dark Images](https://doi.org/10.1109/TNNLS.2024.3409056) | IEEE TNNLS 2025 | Illumination-semantic dual modulation and resolution-sensitive upsampling | [Code](https://github.com/moriyaya/UltraIS) |
-| 2024 | JSLNet | [Joint Image Super-resolution and Low-light Enhancement in the Dark](https://openaccess.thecvf.com/content/ACCV2024/html/Zhou_Joint_Image_Super-resolution_and_Low-light_Enhancement_in_the_Dark_ACCV_2024_paper.html) | ACCV 2024 | Dual RAW/sRGB inputs with frequency fusion | [Code & data](https://github.com/flyhu2/DarkSR) |
-| 2024 | TriCo | [Enhancing Images with Coupled Low-Resolution and Ultra-Dark Degradations: A Tri-level Learning Framework](https://doi.org/10.1145/3664647.3681682) | ACM MM 2024 | Tri-level cooperative optimization with PGR and IHEM | [Code](https://github.com/moriyaya/TriCo) |
-| 2024 | MSIRNet | [Learning Multi-Granularity Semantic Interactive Representation for Joint Low-Light Image Enhancement and Super-Resolution](https://doi.org/10.1016/j.inffus.2024.102467) | Information Fusion 2024 | Semantic and codebook priors for interactive reconstruction | [Code](https://github.com/liushh39/MSIRNet) |
+| 2026 | DTP | [Dual-Path Learning based on Frequency Structural Decoupling and Regional-Aware Fusion for Low-Light Image Super-Resolution](https://arxiv.org/abs/2603.27301) | ICME 2026 | Frequency decoupling with dedicated luminance and texture paths | [Code](https://github.com/JXVision/DTP) |
+| 2026 | GTFMN | [Guided Texture and Feature Modulation Network for Low-Light Image Enhancement and Super-Resolution](https://arxiv.org/abs/2601.19157) | arXiv 2026 | Illumination-guided modulation of texture reconstruction | — |
+| 2025 | DARE | [Degradation-Aware One-Step Diffusion Model for Content-Sensitive Super-Resolution in the Dark](https://doi.org/10.1145/3746027.3755853) | ACM MM 2025 | One-step diffusion with degradation-aware LoRA and content priors | [Code](https://github.com/csmty/DARE) |
+| 2025 | UltraIS | [A Dual-Stream-Modulated Learning Framework for Illuminating and Super-Resolving Ultra-Dark Images](https://doi.org/10.1109/TNNLS.2024.3409056) | IEEE TNNLS 2025 | Illumination-semantic dual modulation and resolution-sensitive merging | [Code](https://github.com/moriyaya/UltraIS) |
+| 2024 | LoLiSRFlow | [Joint Single Image Low-light Enhancement and Super-resolution via Cross-scale Transformer-based Conditional Flow](https://arxiv.org/abs/2402.18871) | arXiv 2024 | Conditional-flow modeling of one-to-many LLLR restoration | [Repository](https://github.com/Yueziyu/LoLiSRFlow) |
+| 2024 | JSLNet | [Joint Image Super-resolution and Low-light Enhancement in the Dark](https://openaccess.thecvf.com/content/ACCV2024/html/Zhou_Joint_Image_Super-resolution_and_Low-light_Enhancement_in_the_Dark_ACCV_2024_paper.html) | ACCV 2024 | RAW/sRGB dual input and cross-frequency fusion | [Code & data](https://github.com/flyhu2/DarkSR) |
+| 2024 | TriCo | [Enhancing Images with Coupled Low-Resolution and Ultra-Dark Degradations: A Tri-level Learning Framework](https://doi.org/10.1145/3664647.3681682) | ACM MM 2024 | Tri-level cooperative optimization, PGR training, and IHEM | [Code](https://github.com/moriyaya/TriCo) |
+| 2024 | MSIRNet | [Learning Multi-Granularity Semantic Interactive Representation for Joint Low-Light Image Enhancement and Super-Resolution](https://doi.org/10.1016/j.inffus.2024.102467) | Information Fusion 2024 | Semantic and codebook priors for high-fidelity reconstruction | [Code](https://github.com/liushh39/MSIRNet) |
 | 2024 | CollaBA | [Collaborative Brightening and Amplification of Low-Light Imagery via Bi-Level Adversarial Learning](https://www.sciencedirect.com/science/article/pii/S0031320324003091) | Pattern Recognition 2024 | Dual-path modulation with bi-level adversarial learning | [Code](https://github.com/moriyaya/CollaBA) |
 | 2024 | BrZoNet | [Unveiling Details in the Dark: Simultaneous Brightening and Zooming for Low-Light Image Enhancement](https://doi.org/10.1609/aaai.v38i7.28515) | AAAI 2024 | Retinex-induced Siamese decoupling and illumination-aware interaction | [Code](https://github.com/Yueziyu/BrZoNet) |
-| 2023 | JLSN | [Joint Low-Light Enhancement and Super Resolution with Image Underexposure Level Guidance](https://papers.bmvc2023.org/0046.pdf) | BMVC 2023 | Relative underexposure estimation and multi-scale sampling | — |
-| 2023 | RELIEF | [RELIEF: Joint Low-Light Image Enhancement and Super-Resolution with Transformers](https://vbn.aau.dk/files/751780650/relief_scia2023_camera_ready.pdf) | SCIA 2023 | Hierarchical encoder-decoder Transformer with cross-shaped attention | — |
-| 2022 | LSR | [LSR: Lightening Super-Resolution Deep Network for Low-Light Image Enhancement](https://doi.org/10.1016/j.neucom.2022.08.025) | Neurocomputing 2022 | Iterative back-projection for joint lightening and SR | — |
+| 2024 | SRRIIE | [Super-Resolving Real-world Image Illumination Enhancement: A New Dataset and a Conditional Diffusion Model](https://arxiv.org/abs/2410.12961) | arXiv 2024 | Real RAW benchmark and conditionally guided diffusion | [Code & data](https://github.com/Yaofang-Liu/Super-Resolving) |
+| 2023 | JLSN | [Joint Low-light Enhancement and Super Resolution with Image Underexposure Level Guidance](https://papers.bmvc2023.org/0046.pdf) | BMVC 2023 | Underexposure estimation and multi-scale sampling for generalization | — |
+| 2023 | RELIEF | [Joint Low-Light Image Enhancement and Super-Resolution with Transformers](https://vbn.aau.dk/files/751780650/relief_scia2023_camera_ready.pdf) | SCIA 2023 | Hierarchical Transformer with efficient cross-shaped attention | — |
+| 2022 | LSR | [LSR: Lightening Super-Resolution Deep Network for Low-Light Image Enhancement](https://doi.org/10.1016/j.neucom.2022.08.025) | Neurocomputing 2022 | Iterative back-projection for lightening and SR | — |
 
-### RAW and sensor-aware methods
+### 2. Burst, video, and event-assisted LLSR
 
-| Year | Method / Dataset | Paper | Venue | Input | Resources |
+| Year | Method | Paper | Venue | Input / output | Resources |
 |---:|---|---|---|---|---|
-| 2024 | SRRIIE | [Super-Resolving Real-World Image Illumination Enhancement: A New Dataset and a Conditional Diffusion Model](https://arxiv.org/abs/2410.12961) | arXiv 2024 | Paired RAW images across exposure/ISO settings | [Code & data](https://github.com/Yaofang-Liu/Super-Resolving) |
-| 2024 | JSLNet / DarkSR | [Joint Image Super-resolution and Low-light Enhancement in the Dark](https://openaccess.thecvf.com/content/ACCV2024/html/Zhou_Joint_Image_Super-resolution_and_Low-light_Enhancement_in_the_Dark_ACCV_2024_paper.html) | ACCV 2024 | Paired LR RAW + LR sRGB → HR sRGB | [Code & data](https://github.com/flyhu2/DarkSR) |
+| 2026 | RetinexEVSR | [Seeing the Unseen: Zooming in the Dark with Event Cameras](https://doi.org/10.1609/aaai.v40i7.37478) | AAAI 2026 | Low-light RGB video + events → HR video | [Code](https://github.com/DachunKai/RetinexEVSR) |
+| 2026 | VSRELL | [VSRELL: A Simple Baseline for Video Super-Resolution and Enhancement in Low-Light Environment](https://openaccess.thecvf.com/content/CVPR2026/html/Hui_VSRELL_A_Simple_Baseline_for_Video_Super-Resolution_and_Enhancement_in_CVPR_2026_paper.html) | CVPR 2026 | LLLR video → well-illuminated HR video | [Announced](https://github.com/373hdj/VSRELL) |
+| 2025 | BIRE / BIPNet | [Burst Image Restoration and Enhancement](https://doi.org/10.1109/TPAMI.2024.3356188) | IEEE TPAMI 2025 | Includes low-light burst SR protocol on SID-SR | [Code](https://github.com/akshaydudhane16/BIPNet) |
+| 2023 | DFEVSR | [Dual Feature Enhanced Video Super-Resolution Network Based on Low-Light Scenarios](https://doi.org/10.1016/j.image.2023.116984) | Signal Processing: Image Communication 2023 | Low-light industrial video → HR video | — |
 
-### Burst and video methods
+### 3. Low-light face super-resolution
 
-| Year | Method | Paper | Venue | Setting | Resources |
+| Year | Method | Paper | Venue | Key contribution | Resources |
 |---:|---|---|---|---|---|
-| 2026 | VSRELL | [VSRELL: A Simple Baseline for Video Super-Resolution and Enhancement in Low-Light Environment](https://openaccess.thecvf.com/content/CVPR2026/html/Hui_VSRELL_A_Simple_Baseline_for_Video_Super-Resolution_and_Enhancement_in_CVPR_2026_paper.html) | CVPR 2026 | Joint illumination enhancement and spatio-temporal VSR | [Announced](https://github.com/373hdj/VSRELL) |
-| 2025 | BIRE | [Burst Image Restoration and Enhancement](https://doi.org/10.1109/TPAMI.2024.3356188) | IEEE TPAMI 2025 | Includes burst low-light SR on SID-SR | [Code](https://github.com/akshaydudhane16/BIPNet) |
+| 2026 | DiffLLFace | [Learning Alternate Illumination-Diffusion Adaptation for Low-Light Face Super-Resolution and Beyond](https://doi.org/10.1109/TIP.2026.3671638) | IEEE TIP 2026 | Alternate illumination-diffusion adaptation with Fourier enhancement | [Code](https://github.com/KaishengPang/DiffLLFace) |
+| 2024 | IC-FSRDENet | [Low-Light Face Super-resolution via Illumination, Structure, and Texture Associated Representation](https://doi.org/10.1609/aaai.v38i6.28339) | AAAI 2024 | Mutual illumination/structure learning and diffusion detail enhancement | [Code](https://github.com/wcy-cs/IC-FSRDENet) |
+| 2024 | Bi-factor DD | [Watch You Under Low-Resolution and Low-Illumination: Face Enhancement via Bi-Factor Degradation Decoupling](https://doi.org/10.1109/TCSVT.2023.3325357) | IEEE TCSVT 2024 | Separates illumination and resolution degradation factors | — |
+| 2024 | LFRNet | [Low-Light Face Super-Resolution With Light Frequency Representation](https://doi.org/10.1109/AIPMV62663.2024.10692293) | AIPMV 2024 | Light-frequency representation for face detail recovery | — |
 
-### Specialized and adjacent methods
+### 4. Specialized and adjacent work
 
-These works are useful for tracing the field but differ from the central single-image natural-scene setting.
-
-| Year | Paper | Venue | Why adjacent | Resources |
+| Year | Paper | Venue | Why it is separate | Resources |
 |---:|---|---|---|---|
-| 2022 | [JSENet: A Deep Convolutional Neural Network for Joint Image Super-Resolution and Enhancement](https://doi.org/10.1016/j.neucom.2021.12.071) | Neurocomputing 2022 | General color/contrast enhancement plus SR, not exclusively low-light | — |
-| 2021 | [Low-Light-Level Image Super-Resolution Reconstruction Based on a Multi-Scale Features Extraction Network](https://doi.org/10.3390/photonics8080321) | Photonics 2021 | Specialized low-light-level imaging detector; grayscale/colorization setting | — |
+| 2022 | [JSENet: A Deep Convolutional Neural Network for Joint Image Super-Resolution and Enhancement](https://doi.org/10.1016/j.neucom.2021.12.071) | Neurocomputing 2022 | General color/contrast enhancement plus SR; not exclusively low-light | — |
+| 2021 | [Low-Light-Level Image Super-Resolution Reconstruction Based on a Multi-Scale Features Extraction Network](https://doi.org/10.3390/photonics8080321) | Photonics 2021 | Low-light-level detector and grayscale/colorization setting | — |
 
-## Datasets
+## Datasets and benchmarks
 
-| Dataset | Year | Data type | Scale / size | Ground truth | Resources |
-|---|---:|---|---|---|---|
-| RELLISUR | 2021 | Real-captured sRGB | 12,750 paired images; multiple darkness and resolution levels | Normal-light HR | [Paper](https://neurips.cc/virtual/2021/29875) · [Homepage](https://vap.aau.dk/rellisur/) · [Download](https://doi.org/10.5281/zenodo.5234969) |
-| LOL-SR | 2022 | Synthetic LLLR derived from LOL | Bicubic-downsampled LOL pairs | Normal-light HR | Introduced with [LSR](https://doi.org/10.1016/j.neucom.2022.08.025) |
-| DarkSR | 2024 | Synthetic and real RAW + sRGB | 1,395 train / 153 test paired samples in the released benchmark | Normal-light HR sRGB | [Paper](https://openaccess.thecvf.com/content/ACCV2024/html/Zhou_Joint_Image_Super-resolution_and_Low-light_Enhancement_in_the_Dark_ACCV_2024_paper.html) · [Download](https://github.com/flyhu2/DarkSR) |
-| SRRIIE | 2024 | Real-captured RAW | 4,800 paired images; −6 EV to 0 EV, ISO 50–12,800 | Higher-quality reference | [Paper](https://arxiv.org/abs/2410.12961) · [Repository](https://github.com/Yaofang-Liu/Super-Resolving) |
-| SID-SR | 2025 | RAW burst patches derived from SID | Burst low-light ×4 SR protocol | Long-exposure reference | Described in [BIRE](https://doi.org/10.1109/TPAMI.2024.3356188) |
+| Dataset | Year | Modality | Ground truth / protocol | Best starting point |
+|---|---:|---|---|---|
+| **RELLISUR** | 2021 | Real-captured sRGB | LLLR images paired with normal-light HR; multiple resolutions and darkness levels | [Paper](https://neurips.cc/virtual/2021/29875) · [Homepage](https://vap.aau.dk/rellisur/) · [Download](https://doi.org/10.5281/zenodo.5234969) |
+| **LOL-SR** | 2022 | Synthetic sRGB | LOL images downsampled for joint LLSR | Introduced with [LSR](https://doi.org/10.1016/j.neucom.2022.08.025) |
+| **DFSR-LLE** | 2024 | Synthetic sRGB | 7,100 LLLR/NLHR pairs modeling coupled degradation | [LoLiSRFlow](https://arxiv.org/abs/2402.18871) |
+| **DarkSR** | 2024 | RAW + sRGB | LR low-light RAW/sRGB with normal-light HR sRGB | [Paper](https://openaccess.thecvf.com/content/ACCV2024/html/Zhou_Joint_Image_Super-resolution_and_Low-light_Enhancement_in_the_Dark_ACCV_2024_paper.html) · [Code & data](https://github.com/flyhu2/DarkSR) |
+| **SRRIIE** | 2024 | Real RAW | 4,800 paired images across −6 to 0 EV and ISO 50–12,800 | [Paper](https://arxiv.org/abs/2410.12961) · [Repository](https://github.com/Yaofang-Liu/Super-Resolving) |
+| **SID-SR** | 2025 | RAW burst | Burst ×4 low-light SR protocol derived from SID | Described in [BIRE](https://doi.org/10.1109/TPAMI.2024.3356188) |
+| **SDSD / SDE / RELED** | 2026 | RGB + events | Low-light video/event protocols used by RetinexEVSR | [RetinexEVSR resources](https://github.com/DachunKai/RetinexEVSR) |
 
-Common synthetic evaluation sets such as LIME-SR, NPE-SR, MEF-SR, DICM-SR, and VV-SR are typically produced by downsampling established low-light enhancement datasets. Please report the exact preprocessing, split, and scale when using them.
+### Evaluation notes
 
-## Related awesome lists
+- Report whether degradation is **real-captured** or **synthetically composed**; these settings should not be mixed without explanation.
+- State the scale factor, color space (RAW/sRGB), darkness/exposure protocol, crop/alignment policy, and test split.
+- Report fidelity and perceptual metrics together where possible. PSNR/SSIM alone do not fully describe illumination naturalness or hallucinated texture.
+- Reproducibility depends on external checkpoints, exact ISP/preprocessing, and data licenses; a public repository does not automatically imply a fully reproducible release.
 
-- [Awesome Super-Resolution](https://github.com/ChaofWang/Awesome-Super-Resolution) — broad image/video SR literature.
-- [Awesome Low-Light Image Enhancement](https://github.com/zhihongz/awesome-low-light-image-enhancement) — enhancement methods, datasets, and metrics.
-- [Awesome Diffusion Models in Low-Level Vision](https://github.com/ChunmingHe/awesome-diffusion-models-in-low-level-vision) — diffusion-based restoration and enhancement.
-- [Awesome Low-Level Vision](https://github.com/DarrenPan/Awesome-CVPR2024-Low-Level-Vision) — conference-oriented low-level vision collections.
+## Reviews and companion collections
 
-## Contributing
+- [Low-Light Image Super-Resolution Using GANs: A Comprehensive Comparative Review](https://doi.org/10.52783/jisem.v10i49s.10024) — focused review (2025).
+- [Awesome Super-Resolution](https://github.com/ChaofWang/Awesome-Super-Resolution) — broader SR literature.
+- [Awesome Low-Light Image Enhancement](https://github.com/zhihongz/awesome-low-light-image-enhancement) — LLIE methods, datasets, and metrics.
+- [Awesome Burst Image Restoration](https://github.com/qulishen/Awesome-Burst-Image-Restoration) — multi-frame restoration.
+- [Awesome Diffusion Models in Low-Level Vision](https://github.com/ChunmingHe/awesome-diffusion-models-in-low-level-vision) — diffusion-based restoration.
 
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) and provide a stable paper link, verified venue/year, official code link when available, and a one-line explanation of why the work belongs in scope.
+## Contribute and maintain
 
-If this list helps your research, consider starring the repository and sharing corrections so the metadata remains useful to the community.
+This is a deliberately maintained list—not a claims leaderboard. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before proposing an entry. The repository uses an [evidence-based maintenance protocol](MAINTENANCE.md), a weekly external-link check, and a public [changelog](CHANGELOG.md).
+
+If this map is useful, a star and a carefully sourced correction are both meaningful contributions.
 
 ## License
 
-To maximize reuse of this bibliography, the list is released under [CC0 1.0](LICENSE). Linked papers, code, datasets, and images retain their original licenses and copyrights.
+The bibliography and original repository text are released under [CC0 1.0](LICENSE). Linked papers, code, datasets, and images retain their own licenses and copyrights.

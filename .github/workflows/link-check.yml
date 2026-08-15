@@ -1,0 +1,26 @@
+name: Link check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"
+  push:
+    paths:
+      - "README.md"
+      - "CONTRIBUTING.md"
+      - "MAINTENANCE.md"
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --verbose --no-progress --accept 200,206,429
+            README.md CONTRIBUTING.md MAINTENANCE.md
+          fail: true
